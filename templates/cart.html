@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>The Bazaar</title>
+    <link rel="stylesheet" href="{% static 'cart/style.css' %}" type="text/css">
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        	<link rel="stylesheet" type="text/css" href="{% static 'register/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+  </head>
+  <body>
+    <nav>
+      <div class="menu-icon"><span class="fas fa-bars"></span></div>
+      <div class="logo">
+        <img src="{% static 'product/bazaarlogo.png' %}" alt="Logo" width="100px" height="70px">
+      </div>
+      <div class="nav-items">
+        <li><a href="/">Home</a></li>
+        <li>
+			<div class="dropdown">
+				<button class="dropbtn">Categories</button>
+				<div class="dropdown-content">
+                    {% for c in categories %}
+					<a href="/categories/{{ c.category }}/">{{ c.category }}</a>
+                    {% endfor %}
+				</div>
+			</div>
+		</li>
+        <li><a href="/profile">My Account</a></li>
+        <li><a href="/cart">Cart{{ items_len }}</a></li>
+        <li><a href="/logout">Logout ({{ username }})</a></li>
+      </div>
+      <div class="search-icon"><span class="fas fa-search"></span></div>
+      <div class="cancel-icon"><span class="fas fa-times"></span></div>
+      <form action="" method="post">
+          {% csrf_token %}
+        <input type="text" name="search" class="search-data" placeholder="Search Product" required>
+        <button type="submit" name="search-btn" class="fas fa-search"></button>
+      </form>
+    </nav>
+
+    {% if cart %}
+    <div class="my-cart-header">My Cart: </div>
+    <div class="cart_list">
+        {% for p in cart %}
+            <div class="card">
+
+                <div class="item">
+
+
+                    {% if p.stock %}
+                        <div class="prod-name">{{ p.name }}</div>
+                        <div class="price">Price: Tk {{ p.price }}</div>
+                        <div class="quantity">Quantity: {{ p.quantity }}</div>
+                    {% else %}
+                        <div class="prod-name" style="font-weight: 500; color: red;">{{ p.name }}</div>
+                        <div class="stock-out" style="font-weight: 500; color: red; font-size: 17px;">Out of Stock!</div>
+                    {% endif %}
+                </div>
+
+                <div class="close-link" style="width: fit-content;">
+                    <a id="cross-btn" class="fas fa-close" href="/cart-removal/{{ p.product_id }}" style="color: rgba(51,40,25,0.29); text-decoration: none; width: 40px; height: 40px; font-size: 24px;"></a>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+     <div class="bottom">
+     <div class="card-checkout">
+
+         <div class="check-out-div">
+            <i class="fas fa-check-square" style="color:#ff8415; display: inline;"></i>
+             <p style="display: inline;" class="total-items">Items: {{ total_items }}</p>
+             <br>
+             <i class="fas fa-dollar" style="color: #ff8415; display: inline;"></i>
+            <p class="total-price" style="display: inline;">Total Price: Tk {{ total_price }}</p>
+        </div>
+
+        <div class="money-icon">
+            <i class="fas fa-shopping-cart" style="width: 40px; height: 40px; font-size: 24px;"></i>
+        </div>
+
+         {% if can_buy %}
+       <form action="" method="post" style="padding-top: 15px;">
+          {% csrf_token %}
+
+           <input id="name" type="text" name="gift" class="gift" placeholder="Gift Someone">
+
+            <label for="payment-meth">Choose payment method:</label>
+
+                <select id="payment-meth" name="payment" class="payment-meth" style="display:block; border: none; border-radius: 3px; padding: 5px; margin-top: 5px;" required>
+                    <option value=""></option>
+                    <option value="COD">Cash on Delivery</option>
+                    <option value="Bank">Bank A/C</option>
+                </select>
+
+                <button style="background: #ff9917; display: block; margin-top: 15px; padding: 4px 7px 4px 7px; border: none; color: white; border-radius: 5px;" type="submit" id="buy-btn" name="buy-btn" class="buy-btn">Check Out</button>
+       </form>
+        {% else %}
+             <div style="padding-top:7px; color: red;" class="remove-item">Remove Unavailable Items from List!</div>
+        {% endif %}
+    </div>
+
+     </div>
+
+    {% else %}
+        <div class="cart-empty" style="margin: auto; text-align: center; padding-top: 130px; padding-bottom: 60px; font-size: 28px; color: #e63600;">You have no items in Cart</div>
+        <div class="transactions">
+            <a class="purchase-link" href="/purchases">View Purchases</a>
+        </div>
+    {% endif %}
+
+
+
+      <script type="text/javascript" src="{% static 'cart/script.js' %}"></script>
+      <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+</body>
+</html>

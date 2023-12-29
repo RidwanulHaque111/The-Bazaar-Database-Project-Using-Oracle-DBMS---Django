@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>The Bazaar</title>
+    <link rel="stylesheet" href="{% static 'product/style.css' %}" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+  </head>
+  <body>
+    <nav>
+      <div class="menu-icon"><span class="fas fa-bars"></span></div>
+      <div class="logo">
+        <img src="{% static 'product/bazaarlogo.png' %}" alt="Logo" width="100px" height="70px">
+      </div>
+      <div class="nav-items">
+        <li><a href="/">Home</a></li>
+        <li>
+			<div class="dropdown">
+				<button class="dropbtn">Categories</button>
+				<div class="dropdown-content">
+                    {% for c in categories %}
+					<a href="/categories/{{ c.category }}/">{{ c.category }}</a>
+                    {% endfor %}
+				</div>
+			</div>
+		</li>
+        <li><a href="/profile">My Account</a></li>
+        <li><a href="/cart">Cart{{ items_len }}</a></li>
+        <li><a href="/logout">Logout ({{ username }})</a></li>
+      </div>
+      <div class="search-icon"><span class="fas fa-search"></span></div>
+      <div class="cancel-icon"><span class="fas fa-times"></span></div>
+      <form action="" method="post">
+          {% csrf_token %}
+        <input type="text" name="search" class="search-data" placeholder="Search Product" required>
+        <button type="submit" name="search-btn" class="fas fa-search"></button>
+      </form>
+    </nav>
+    <div class="container">
+        <div class="row">
+
+
+            <!-- Left Column / Headphones Image -->
+            <div class="left_column">
+                <img class="product_img" src="{{ product.image_link }}" alt="">
+            </div>
+
+
+            <!-- Right Column -->
+            <div class="right_column">
+
+                <!-- Product Description -->
+                <div class="product-description">
+                    <div class="category">{{ product.category }}</div>
+                    <h2 class="product_name">{{ product.name }}</h2>
+                    <p class="description">Description: {{ product.description }}</p>
+                    {% if product.brand %}
+                        <p class="brand">Brand: {{ product.brand }}</p>
+                    {% endif %}
+                    {% if stock_info %}
+                        <p class="quantity_left">{{ product.quantity_left }} left in stock</p>
+                    {% endif %}
+
+                </div>
+
+             {% if stock_info %}
+                <div class="product_price">
+                    Tk {{ product.price }}
+                </div>
+
+                {% if product.discount %}
+                    <p class="discount-desc" style="color: #fec107;">{{ product.discount_desc }}</p>
+                    <p class="discount">{{ product.discount }}</p>
+                {% endif %}
+
+
+                {% if quantity_selected.quantity %}
+                    <div class="quantity-selected">Quantity selected: {{ quantity_selected.quantity }}</div>
+                    <span class="new-btns">
+                        <a href="/" class="shop-more">Shop More</a>
+                        <a href="/cart" class="check-out-btn">Check Out</a>
+                    </span>
+
+                {% else %}
+
+                    <div class="form">
+                        <form action="" method="post" class="quantity_form">
+                            {% csrf_token %}
+                            <label for="quantity">Quantity: </label>
+                            <input type="number" class="input_field" id="quantity" name="quantity" required min="1" max="{{ product.quantity_left }}">
+                            <input type="submit" name="quantity-btn" class="cart_add" value="Add to Cart" style="display: block; padding: 5px; border-radius: 4px; background: #ff5405; color: white; font-size: 15px;">
+                        </form>
+                    </div>
+
+                {% endif %}
+            {% else %}
+                <div class="out-of-stock" style="margin-top: 60px; font-size: 20px; color: #e63600;">OUT OF STOCK!</div>
+            {% endif %}
+            </div>
+
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'home/script.js' %}"></script>
+
+    <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+
+  </body>
+</html>
